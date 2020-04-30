@@ -4,6 +4,8 @@
 namespace Phore\CliTools;
 
 
+use Phore\CliTools\Ex\UserInputException;
+use Phore\CliTools\Helper\ColorOutput;
 use Phore\CliTools\Helper\GetOptResult;
 use Phore\Log\Logger\PhoreEchoLoggerDriver;
 use Phore\Log\PhoreLogger;
@@ -17,9 +19,12 @@ abstract class PhoreAbstractCli
     /**
      * @var LoggerInterface
      */
-    protected $log;
+    public $log;
 
-    protected $opts;
+    /**
+     * @var GetOptResult
+     */
+    public $opts;
 
     private $longOpts;
     private $options;
@@ -53,12 +58,69 @@ abstract class PhoreAbstractCli
     }
 
 
+    /**
+     * Output a message
+     *
+     * @param mixed ...$msg
+     */
+    public function out(...$msg)
+    {
+        file_put_contents("php://stderr", implode(" ", $msg));
+    }
+
+    /**
+     * Output emergency message (with red border)
+     *
+     * @param mixed ...$msg
+     */
+    public function outEmergency(...$msg)
+    {
+        file_put_contents(
+            "php://stderr",
+            ColorOutput::Str(implode(" ", $msg), "red")
+        );
+    }
+
     abstract protected function main(array $argv, int $argc, GetOptResult $opts);
+
+
+    /**
+     * Execute depending
+     *
+     * ```
+     * $this->execMap([
+     *      "createThing" => function(array $argv, string $carg) {},
+     *      "deleteThing" => function(array $argv, int $argc, string $carg) {[
+     * ]);
+     * ```
+     *
+     * @param array $map
+     * @throws UserInputException
+     */
+    protected function execMap(array $map)
+    {
+        $argv = $this->opts->argv();
+        $nextArg = array_shift($argv);
+
+        if ( ! isset ($map[$nextArg]))
+            throw new UserInputException("Operation '$nextArg' unknown.");
+
+        if ( ! is_callable($map[$nextArg]))
+            throw new \InvalidArgumentException("Operation '$nextArg' points to non callable");
+
+        // Call the function
+        ($map[$nextArg])($argv, count ($argv), $nextArg);
+    }
+
 
     /**
      * Main function called by the cli executable.
      *
      * It will run self::main() with expected parameters
+     *
+     * Default Options will apply
+     *      -h --help       Show help
+     *      -v --verbose    Be verbose
      *
      *
      */
@@ -69,8 +131,9 @@ abstract class PhoreAbstractCli
         $this->cmdName = $argv[0];
 
         // Generate the opts Object with options and the number of parsed options
-        $_getOptRes = getopt($this->options, $this->longOpts, $optInd);
+        $_getOptRes = getopt("hv" . $this->options, $this->longOpts, $optInd);
         $opts = $this->opts = new GetOptResult($_getOptRes, $optInd);
+
 
         // Print help if -h or --help
         if ($opts->has("h") || $opts->has("help")) {
@@ -89,9 +152,9 @@ abstract class PhoreAbstractCli
         // Run the main function and transform exceptions to CLI printable
         // Results
         try {
-            $this->main($argv, $argc, $opts);
+            $this->main($opts->argv(), count($opts->argv()), $opts);
         } catch (\Exception $e) {
-            $this->log->emergency($e->getMessage());
+            $this->outEmergency("Error: " . $e->getMessage() . PHP_EOL);
             exit(1);
         }
     }
