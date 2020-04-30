@@ -1,0 +1,19 @@
+#!/usr/bin/php
+<?php
+
+
+// Try to load the autoload both from local and from vendor bin dir
+if (file_exists(__DIR__ . "/../vendor/autoload.php")) {
+    require __DIR__ . "/../vendor/autoload.php";
+} else {
+    require __DIR__ . "/../../../autoload.php";
+}
+
+/**
+ * Adjust this to your CliClass
+ */
+$i = new App\TestCli();
+$i->run();
+
+
+
