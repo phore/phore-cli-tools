@@ -33,6 +33,30 @@ abstract class PhoreAbstractCli
     private $helpFile;
     private $cmdName;
 
+    /**
+     * PhoreAbstractCli constructor.
+     *
+     * Define the basic configuration of the cli
+     * in the child class.
+     *
+     * ```
+     * public function __construct()
+     * {
+     *     parent::__construct(
+     *         "IaC service tool",
+     *         __DIR__ . "/../cli_help.txt",
+     *         "p:m",
+     *         ["file"]
+     *      );
+     * );
+     *
+     * ```
+     *
+     * @param string $commandTitle  The title to display in help
+     * @param string $helpFile      The txt file to output if -h or --help is parameter
+     * @param string $options       Options string following the getopt() rules
+     * @param array $longOpts       Options array following the getopt() rules
+     */
     public function __construct(
         string $commandTitle,
         string $helpFile,
@@ -52,6 +76,9 @@ abstract class PhoreAbstractCli
     /**
      * Print the help text (defined in constructor)
      *
+     * Uses the text-file to generate the help
+     * if user runs <command> -h or <command> --help
+     *
      */
     protected function printHelp()
     {
@@ -63,9 +90,8 @@ abstract class PhoreAbstractCli
         $this->out($o . PHP_EOL);
     }
 
-
     /**
-     * Output a message
+     * Output a message to stdout
      *
      * @param mixed ...$msg
      */
@@ -86,9 +112,6 @@ abstract class PhoreAbstractCli
             ColorOutput::Str(implode(" ", $msg), "red")
         );
     }
-
-    abstract protected function main(array $argv, int $argc, GetOptResult $opts);
-
 
     /**
      * Execute depending
@@ -120,7 +143,6 @@ abstract class PhoreAbstractCli
         // Call the function
         ($map[$nextArg])($argv, count ($argv), $nextArg);
     }
-
 
     /**
      * Main function called by the cli executable.
@@ -171,5 +193,15 @@ abstract class PhoreAbstractCli
             exit(1);
         }
     }
+
+    /**
+     * Your code executed here
+     *
+     * @param array $argv
+     * @param int $argc
+     * @param GetOptResult $opts
+     * @return mixed
+     */
+    abstract protected function main(array $argv, int $argc, GetOptResult $opts);
 
 }
