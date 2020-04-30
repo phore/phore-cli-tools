@@ -13,10 +13,16 @@ class GetOptResult
     private $result;
     private $optind;
 
+    private $argv;
+
     public function __construct(array $result, $optind)
     {
         $this->result = $result;
         $this->optind = $optind;
+        $argv = $GLOBALS["argv"];
+        for($i = 0; $i < $optind; $i++)
+            array_shift($argv);
+        $this->argv = $argv;
     }
 
     public function has(string $key) : bool
@@ -49,8 +55,14 @@ class GetOptResult
         return $result;
     }
 
-    public function argv()
+    /**
+     * Argv array without the parsed
+     * elements
+     *
+     * @return array
+     */
+    public function argv() : array
     {
-
+        return $this->argv;
     }
 }

@@ -1,5 +1,9 @@
-# Phore Socket Server
+# Phore Cli Helper
 
-A buffering udp socket server with adjusable flush intervals.
+Boilerplate CLI Tool
 
-Comes with an Abstract Syslog implementation.
+
+## Example
+
+- [Example class](doc/example.phps);
+- [Example executable](doc/exampleExec);

@@ -55,21 +55,30 @@ abstract class PhoreAbstractCli
 
     abstract protected function main(array $argv, int $argc, GetOptResult $opts);
 
+    /**
+     * Main function called by the cli executable.
+     *
+     * It will run self::main() with expected parameters
+     *
+     *
+     */
     public function run()
     {
         $argv = $GLOBALS["argv"];
         $argc = $GLOBALS["argc"];
         $this->cmdName = $argv[0];
-        $_getOpt = getopt($this->options, $this->longOpts, $optInd);
-        $opts = new GetOptResult($_getOpt);
 
-        $opts = $this->opts = phore_getopt("hv:" . $this->options, $this->longOpts, $optInd);
+        // Generate the opts Object with options and the number of parsed options
+        $_getOptRes = getopt($this->options, $this->longOpts, $optInd);
+        $opts = $this->opts = new GetOptResult($_getOptRes, $optInd);
 
+        // Print help if -h or --help
         if ($opts->has("h") || $opts->has("help")) {
             $this->printHelp();
             exit(2);
         }
 
+        // Register Verbose logger on -v or --verbose
         if ($opts->has("v") || $opts->has("verbose")) {
             if (class_exists("Phore\Log\PhoreLogger")) {
                 $this->log = new PhoreLogger(new PhoreEchoLoggerDriver());
@@ -77,10 +86,8 @@ abstract class PhoreAbstractCli
             }
         }
 
-        $argc -= $optInd;
-        for ($i = 0; $i<$optInd; $i++)
-            array_shift($argv);
-
+        // Run the main function and transform exceptions to CLI printable
+        // Results
         try {
             $this->main($argv, $argc, $opts);
         } catch (\Exception $e) {
