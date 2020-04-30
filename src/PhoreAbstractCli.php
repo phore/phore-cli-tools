@@ -4,7 +4,7 @@
 namespace Phore\CliTools;
 
 
-use Phore\Core\Helper\PhoreGetOptResult;
+use Phore\CliTools\Helper\GetOptResult;
 use Phore\Log\Logger\PhoreEchoLoggerDriver;
 use Phore\Log\PhoreLogger;
 use Psr\Log\LoggerInterface;
@@ -50,27 +50,31 @@ abstract class PhoreAbstractCli
         $o .= "Usage:" . PHP_EOL;
 
         file_put_contents("php://stdout", $o);
-        exit(2);
     }
 
 
-    abstract protected function main(array $argv, int $argc, PhoreGetOptResult $opts);
+    abstract protected function main(array $argv, int $argc, GetOptResult $opts);
 
     public function run()
     {
         $argv = $GLOBALS["argv"];
         $argc = $GLOBALS["argc"];
         $this->cmdName = $argv[0];
+        $_getOpt = getopt($this->options, $this->longOpts, $optInd)
+        $opts = new GetOptResult($_getOpt);
 
         $opts = $this->opts = phore_getopt("hv:" . $this->options, $this->longOpts, $optInd);
 
         if ($opts->has("h") || $opts->has("help")) {
-            return $this->printHelp();
+            $this->printHelp();
+            exit(2);
         }
 
         if ($opts->has("v") || $opts->has("verbose")) {
-            $this->log = new PhoreLogger(new PhoreEchoLoggerDriver());
-            $this->log->setLogLevel(LogLevel::DEBUG);
+            if (class_exists("Phore\Log\PhoreLogger")) {
+                $this->log = new PhoreLogger(new PhoreEchoLoggerDriver());
+                $this->log->setLogLevel(LogLevel::DEBUG);
+            }
         }
 
         $argc -= $optInd;

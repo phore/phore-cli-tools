@@ -13,13 +13,16 @@
     ],
     "require": {
         "php": ">=7.2",
-        "phore/log": "*",
-        "phore/core": "*"
+        "psr/log": "^1.1"
     },
     "bin": "bin",
 
     "require-dev": {
+        "phore/log": "*",
         "phpunit/phpunit": "*"
+    },
+    "suggest": {
+        "phore/log": "Enable advanced logging / out capabilities"
     },
     "autoload": {
         "psr-4": {
