@@ -49,12 +49,18 @@ abstract class PhoreAbstractCli
 
     }
 
+    /**
+     * Print the help text (defined in constructor)
+     *
+     */
     protected function printHelp()
     {
         $o  = "{$this->cmdName} - {$this->commandTitle}" . PHP_EOL;
         $o .= "Usage:" . PHP_EOL;
 
-        file_put_contents("php://stdout", $o);
+        $o .= file_get_contents($this->helpFile);
+
+        $this->out($o . PHP_EOL);
     }
 
 
@@ -102,8 +108,11 @@ abstract class PhoreAbstractCli
         $argv = $this->opts->argv();
         $nextArg = array_shift($argv);
 
+        if ($nextArg === null)
+            throw new UserInputException("Missing command");
+
         if ( ! isset ($map[$nextArg]))
-            throw new UserInputException("Operation '$nextArg' unknown.");
+            throw new UserInputException("Operation '$nextArg' unknown");
 
         if ( ! is_callable($map[$nextArg]))
             throw new \InvalidArgumentException("Operation '$nextArg' points to non callable");
@@ -153,6 +162,10 @@ abstract class PhoreAbstractCli
         // Results
         try {
             $this->main($opts->argv(), count($opts->argv()), $opts);
+        } catch (UserInputException $e) {
+            $this->outEmergency(  $e->getMessage(). PHP_EOL);
+            $this->outEmergency(  "Run '$this->cmdName -h' to see help". PHP_EOL);
+            exit(1);
         } catch (\Exception $e) {
             $this->outEmergency("Error: " . $e->getMessage() . PHP_EOL);
             exit(1);
