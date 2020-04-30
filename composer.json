@@ -1,0 +1,30 @@
+{
+    "name": "phore/cli-tools",
+    "type": "library",
+    "description": "Cli helper tools",
+    "keywords": ["cli", "Secrets", "CloudIA"],
+    "homepage": "https://infracamp.com/phore",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthias Leuffen",
+            "email": "m@tth.es"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "phore/log": "*",
+        "phore/core": "*"
+    },
+    "bin": "bin",
+
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phore\\CliTools\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}

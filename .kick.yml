@@ -1,0 +1,18 @@
+# Kickstart container config file - see https://gitub.com/infracamp/kickstart
+# Run ./kickstart.sh to start a development-container for this project
+version: 1
+from: "infracamp/kickstart-flavor-gaia:testing"
+command:
+  build:
+    - "composer update"
+  init:
+  test:
+    - "vendor/bin/phpunit --bootstrap vendor/autoload.php --testdox test"
+  run:
+  dev:
+    - "echo 'I am executed in dev mode'"
+
+  send:
+    - "D:socketserver -s -v"
+    - "sleep 1"
+    - "logger -d --rfc5424  --id id1  -t tag1 --server localhost --port 4200 'Some message'"
