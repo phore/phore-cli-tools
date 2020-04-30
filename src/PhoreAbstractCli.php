@@ -60,7 +60,7 @@ abstract class PhoreAbstractCli
         $argv = $GLOBALS["argv"];
         $argc = $GLOBALS["argc"];
         $this->cmdName = $argv[0];
-        $_getOpt = getopt($this->options, $this->longOpts, $optInd)
+        $_getOpt = getopt($this->options, $this->longOpts, $optInd);
         $opts = new GetOptResult($_getOpt);
 
         $opts = $this->opts = phore_getopt("hv:" . $this->options, $this->longOpts, $optInd);
