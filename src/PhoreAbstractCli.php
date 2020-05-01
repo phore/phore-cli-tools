@@ -70,8 +70,15 @@ abstract class PhoreAbstractCli
 
         $this->commandTitle = $commandTitle;
         $this->helpFile = $helpFile;
-
     }
+
+    /**
+     * 1= normal;
+     * 0=silent mode: only show emergency (-s)
+     * 2=debug mode: show also debug messages (-v)
+     * @var int
+     */
+    public $outMode = 1;
 
     /**
      * Print the help text (defined in constructor)
@@ -84,6 +91,11 @@ abstract class PhoreAbstractCli
     {
         $o  = "{$this->cmdName} - {$this->commandTitle}" . PHP_EOL;
         $o .= "Usage:" . PHP_EOL;
+        $o .= "  $this->cmdName [parameters] [command]" . PHP_EOL . PHP_EOL;
+        $o .= "Parameters:" . PHP_EOL;
+        $o .= "  -v --verbose       Be verbose (output debug info)" . PHP_EOL;
+        $o .= "  -s --silent        Output only errors" . PHP_EOL;
+        $o .= "  -h --help          Show this help" . PHP_EOL;
 
         $o .= file_get_contents($this->helpFile);
 
@@ -93,23 +105,46 @@ abstract class PhoreAbstractCli
     /**
      * Output a message to stdout
      *
+     * Output is "regular output". Unless --silent is specified, this will
+     * generate output
+     *
      * @param mixed ...$msg
      */
     public function out(...$msg)
     {
+        if ($this->outMode < 1)
+            return;
         file_put_contents("php://stderr", implode(" ", $msg));
     }
 
     /**
-     * Output emergency message (with red border)
+     * Output debug-message to stdout
+     *
+     * Output send with this function is only outputted if --verbose
+     * is specified
      *
      * @param mixed ...$msg
      */
-    public function outEmergency(...$msg)
+    public function debug(...$msg)
+    {
+        if ($this->outMode < 2)
+            return;
+        file_put_contents("php://stderr", implode(" ", $msg));
+    }
+
+
+    /**
+     * Output emergency message (with red border)
+     *
+     * Output of this method will be outputted everytime and is fomatted red.
+     *
+     * @param mixed ...$msg
+     */
+    public function emergency(...$msg)
     {
         file_put_contents(
             "php://stderr",
-            ColorOutput::Str(implode(" ", $msg), "red")
+            implode(" ", $msg)
         );
     }
 
@@ -159,10 +194,10 @@ abstract class PhoreAbstractCli
     {
         $argv = $GLOBALS["argv"];
         $argc = $GLOBALS["argc"];
-        $this->cmdName = $argv[0];
+        $this->cmdName = basename($argv[0]);
 
         // Generate the opts Object with options and the number of parsed options
-        $_getOptRes = getopt("hv" . $this->options, $this->longOpts, $optInd);
+        $_getOptRes = getopt("hvs" . $this->options, ["verbose", "silent", "help"] + $this->longOpts, $optInd);
         $opts = $this->opts = new GetOptResult($_getOptRes, $optInd);
 
 
@@ -174,10 +209,15 @@ abstract class PhoreAbstractCli
 
         // Register Verbose logger on -v or --verbose
         if ($opts->has("v") || $opts->has("verbose")) {
+            $this->outMode = 2;
             if (class_exists("Phore\Log\PhoreLogger")) {
                 $this->log = new PhoreLogger(new PhoreEchoLoggerDriver());
                 $this->log->setLogLevel(LogLevel::DEBUG);
             }
+        }
+
+        if ($opts->has("s") || $opts->has("silent")) {
+            $this->outMode = 0; // Show only emergency()
         }
 
         // Run the main function and transform exceptions to CLI printable
@@ -185,11 +225,11 @@ abstract class PhoreAbstractCli
         try {
             $this->main($opts->argv(), count($opts->argv()), $opts);
         } catch (UserInputException $e) {
-            $this->outEmergency(  $e->getMessage(). PHP_EOL);
-            $this->outEmergency(  "Run '$this->cmdName -h' to see help". PHP_EOL);
+            $this->emergency(  ColorOutput::Str($e->getMessage(), "red"). PHP_EOL);
+            $this->emergency(  "Run '$this->cmdName -h' to see help". PHP_EOL);
             exit(1);
         } catch (\Exception $e) {
-            $this->outEmergency("Error: " . $e->getMessage() . PHP_EOL);
+            $this->emergency(ColorOutput::Str("Error: " . $e->getMessage(), "red"). PHP_EOL);
             exit(1);
         }
     }
