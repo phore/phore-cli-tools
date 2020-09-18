@@ -130,7 +130,14 @@ abstract class PhoreAbstractCli
         }
     }
 
-    public function ask(string $question, $default=null, callable $validator=null)
+    /**
+     * @param string $question
+     * @param null $default
+     * @param callable|string|null $validator   Regex or callback to validate input
+     * @return mixed|string
+     * @throws InvalidDataException
+     */
+    public function ask(string $question, $default=null, $validator=null)
     {
         while (true) {
             $answer = readline($question);
@@ -142,11 +149,23 @@ abstract class PhoreAbstractCli
 
             // Validate only non-default answers
             if ($validator !== null) {
-                $validatedAnswer = $validator($answer);
-                if ($validatedAnswer === null)
-                    continue; // invalid
-                return $validatedAnswer;
+                if (is_string($validator)) {
+                    if (! preg_match ($validator, $answer)) {
+                        $this->out("Invalid input: ($validator)\n");
+                        continue;
+                    }
+
+                }
+
+                if (is_callable($validator)) {
+                    $validatedAnswer = $validator($answer);
+                    if ($validatedAnswer === null)
+                        continue; // invalid
+                    return $validatedAnswer;
+                }
+
             }
+            return $answer;
         }
     }
 
