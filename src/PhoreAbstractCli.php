@@ -7,6 +7,7 @@ namespace Phore\CliTools;
 use Phore\CliTools\Ex\UserInputException;
 use Phore\CliTools\Helper\ColorOutput;
 use Phore\CliTools\Helper\GetOptResult;
+use Phore\Core\Exception\InvalidDataException;
 use Phore\Log\Logger\PhoreEchoLoggerDriver;
 use Phore\Log\PhoreLogger;
 use Psr\Log\LoggerInterface;
@@ -115,6 +116,38 @@ abstract class PhoreAbstractCli
         if ($this->outMode < 1)
             return;
         file_put_contents("php://stderr", implode(" ", $msg));
+    }
+
+
+    public function askYesNo(string $question, bool $default=null)
+    {
+        while (true) {
+            $result = readline($question);
+            if ($result === false)
+                throw new InvalidDataException("Invalid answer to question '$question'.");
+
+
+        }
+    }
+
+    public function ask(string $question, $default=null, callable $validator=null)
+    {
+        while (true) {
+            $answer = readline($question);
+            if ($answer === false)
+                throw new InvalidDataException("Invalid answer to question '$question'.");
+
+            if ($default !== null && $answer === "")
+                return $default;
+
+            // Validate only non-default answers
+            if ($validator !== null) {
+                $validatedAnswer = $validator($answer);
+                if ($validatedAnswer === null)
+                    continue; // invalid
+                return $validatedAnswer;
+            }
+        }
     }
 
     /**
