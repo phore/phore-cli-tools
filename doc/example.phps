@@ -4,9 +4,9 @@ namespace App;
 
 
 use Phore\CliTools\Helper\GetOptResult;
-use Phore\CliTools\PhoreAbstractCli;
+use Phore\CliTools\PhoreAbstractCmd;
 
-class TestCli extends PhoreAbstractCli
+class TestCmd extends PhoreAbstractCmd
 {
 
     public function __construct()
