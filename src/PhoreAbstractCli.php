@@ -6,6 +6,7 @@ namespace Phore\CliTools;
 
 use Phore\CliTools\Ex\UserInputException;
 use Phore\CliTools\Helper\ColorOutput;
+use Phore\CliTools\Helper\GetOptParser;
 use Phore\CliTools\Helper\GetOptResult;
 use Phore\Core\Exception\InvalidDataException;
 use Phore\Log\Logger\PhoreEchoLoggerDriver;
@@ -242,16 +243,16 @@ abstract class PhoreAbstractCli
      *
      *
      */
-    public function run()
+    public function run(array $argv = null)
     {
-        $argv = $GLOBALS["argv"];
-        $argc = $GLOBALS["argc"];
-        $this->cmdName = basename($argv[0]);
+        if ($argv === null)
+            $argv = $GLOBALS["argv"];
+        $this->cmdName = array_shift($argv);
 
         // Generate the opts Object with options and the number of parsed options
-        $_getOptRes = getopt("hvs" . $this->options, ["verbose", "silent", "help"] + $this->longOpts, $optInd);
-        $opts = $this->opts = new GetOptResult($_getOptRes, $optInd);
 
+        $getOpsParser = new GetOptParser($this->options, $this->longOpts);
+        $opts = $getOpsParser->getOpts($argv);
 
         // Print help if -h or --help
         if ($opts->has("h") || $opts->has("help")) {
@@ -300,6 +301,6 @@ abstract class PhoreAbstractCli
      * @param GetOptResult $opts
      * @return mixed
      */
-    abstract protected function main(array $argv, int $argc, GetOptResult $opts);
+    abstract protected function main(GetOptResult $opts);
 
 }

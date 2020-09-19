@@ -11,18 +11,14 @@ namespace Phore\CliTools\Helper;
 class GetOptResult
 {
     private $result;
-    private $optind;
+    private $unparsed;
 
     private $argv;
 
-    public function __construct(array $result, $optind)
+    public function __construct(array $result, array $unparsed)
     {
         $this->result = $result;
-        $this->optind = $optind;
-        $argv = $GLOBALS["argv"];
-        for($i = 0; $i < $optind; $i++)
-            array_shift($argv);
-        $this->argv = $argv;
+        $this->unparsed = $unparsed;
     }
 
     public function has(string $key) : bool
@@ -80,6 +76,6 @@ class GetOptResult
      */
     public function argv() : array
     {
-        return $this->argv;
+        return $this->unparsed;
     }
 }
