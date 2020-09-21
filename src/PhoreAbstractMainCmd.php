@@ -14,6 +14,7 @@ abstract class PhoreAbstractMainCmd extends PhoreAbstractCmd
     public function main(array $argv, int $argc) : int
     {
         try {
+            array_shift($argv);
             $context = new ShellCliContext($argv);
             $this->invoke($context);
         } catch (CliExitException $e) {

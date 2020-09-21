@@ -24,15 +24,8 @@ class MainCmd extends PhoreAbstractMainCmd
             $cliContext->printHelpAndExit();
         }
 
-        switch ($opts->argv(0)) {
-            case "user":
-                return $cliContext->dispatch(new UserCmd());
-
-            case null:
-                throw new \InvalidArgumentException("Missing command.");
-
-            default:
-                throw new InvalidDataException("Invalid command '{$opts->argv(0)}'");
-        }
+        $cliContext->dispatchMap([
+            "user" => new UserCmd()
+        ], $opts->getCmd());
     }
 }

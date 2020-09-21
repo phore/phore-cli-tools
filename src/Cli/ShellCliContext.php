@@ -5,6 +5,7 @@ namespace Phore\CliTools\Cli;
 
 
 use Phore\CliTools\Ex\CliExitException;
+use Phore\CliTools\Ex\UserInputException;
 use Phore\CliTools\Helper\GetOptParser;
 use Phore\CliTools\Helper\GetOptResult;
 use Phore\CliTools\PhoreAbstractCmd;
@@ -202,4 +203,14 @@ class ShellCliContext implements CliContext
 
         return $cmd->invoke($newContextInstance);
     }
+
+    public function dispatchMap (array $cmdMap, string $cmd = null)
+    {
+        if ($cmd === null)
+            throw new UserInputException("Command missing: available: " . implode(", ", array_keys($cmdMap)));
+        if ( ! isset ($cmdMap[$cmd]))
+            throw new UserInputException("Invalid command '$cmd'. Allowed commands: " . implode(", ", array_keys($cmdMap)));
+        return $this->dispatch($cmdMap[$cmd]);
+    }
+
 }
