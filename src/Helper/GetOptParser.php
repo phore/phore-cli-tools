@@ -50,8 +50,13 @@ class GetOptParser
 
     public function getOpts(array $argv, array &$rest=null) : GetOptResult
     {
+        $cmd = array_shift($argv);
 
-        $result = [];
+        if (count($argv) > 0 && ! startsWith($argv[0], "-")) {
+            $rest = $argv;
+            return new GetOptResult($cmd, [], $argv);
+        }
+        $parsedOpts = [];
         while (count($argv) > 0) {
             $curArg = array_shift($argv);
             if (startsWith($curArg, "--")) {
@@ -66,18 +71,18 @@ class GetOptParser
                 $type = $this->shortOpts[$p];
             } else {
                 $rest = $argv;
-                return new GetOptResult($result, $argv);
+                return new GetOptResult($cmd, $parsedOpts, $argv);
             }
             if ($type === self::PARAM_BOOL)
-                $result[$p] = true;
+                $parsedOpts[$p] = true;
             if ($type === self::PARAM_REQ) {
                 if (count($argv) === 0)
                     throw new UserInputException("Missing value for parameter '$curArg'");
                 $value = array_shift($argv);
-                $result[$p] = $value;
+                $parsedOpts[$p] = $value;
             }
         }
         $rest = $argv;
-        return new GetOptResult($result, $argv);
+        return new GetOptResult($cmd, $parsedOpts, $argv);
     }
 }

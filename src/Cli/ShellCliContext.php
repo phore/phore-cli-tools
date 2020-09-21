@@ -15,11 +15,10 @@ class ShellCliContext implements CliContext
 
     public function __construct(array $argv = [])
     {
-        $this->cmd = array_shift($argv);
         $this->argv = $this->unparsedArgv = $argv;
     }
 
-    private $cmd;
+
 
     private $verbosity = 7;
 

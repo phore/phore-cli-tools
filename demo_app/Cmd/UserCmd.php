@@ -18,6 +18,7 @@ class UserCmd extends PhoreAbstractCmd
 
     public function invoke(CliContext $cliContext)
     {
+        $opts = $cliContext->getOpts("x");
 
     }
 }
