@@ -6,6 +6,7 @@ namespace Phore\CliTools\Cli;
 
 use Phore\CliTools\Ex\CliExitException;
 use Phore\CliTools\Ex\UserInputException;
+use Phore\CliTools\Helper\ColorOutput;
 use Phore\CliTools\Helper\GetOptParser;
 use Phore\CliTools\Helper\GetOptResult;
 use Phore\CliTools\PhoreAbstractCmd;
@@ -88,7 +89,7 @@ class ShellCliContext implements CliContext
             return;
         file_put_contents(
             "php://stderr",
-            implode(" ", $msg)
+            ColorOutput::Str(PHP_EOL . implode(" ", $msg), "red") . PHP_EOL
         );
     }
 
