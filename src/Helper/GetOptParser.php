@@ -50,20 +50,22 @@ class GetOptParser
 
     public function getOpts(array $argv, array &$rest=null) : GetOptResult
     {
+
         $result = [];
         while (count($argv) > 0) {
             $curArg = array_shift($argv);
-            if (startsWith("--", $curArg)) {
+            if (startsWith($curArg, "--")) {
                 $p = substr($curArg, 2);
                 if ( ! isset($this->longOpts[$p]))
                     throw new UserInputException("Unrecognized option: '--$p'");
                 $type = $this->longOpts[$p];
-            } else if (startsWith("-", $curArg)) {
+            } else if (startsWith($curArg, "-")) {
                 $p = substr($curArg, 1);
                 if ( ! isset($this->shortOpts[$p]))
                     throw new UserInputException("Unrecognized option: '--$p'");
                 $type = $this->shortOpts[$p];
             } else {
+                $rest = $argv;
                 return new GetOptResult($result, $argv);
             }
             if ($type === self::PARAM_BOOL)
@@ -75,6 +77,7 @@ class GetOptParser
                 $result[$p] = $value;
             }
         }
+        $rest = $argv;
         return new GetOptResult($result, $argv);
     }
 }

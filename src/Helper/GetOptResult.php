@@ -10,15 +10,14 @@ namespace Phore\CliTools\Helper;
  */
 class GetOptResult
 {
-    private $result;
-    private $unparsed;
 
+    private $result;
     private $argv;
 
-    public function __construct(array $result, array $unparsed)
+    public function __construct(array $result, array $argv)
     {
         $this->result = $result;
-        $this->unparsed = $unparsed;
+        $this->argv = $argv;
     }
 
     public function has(string $key) : bool
@@ -72,10 +71,18 @@ class GetOptResult
      * Argv array without the parsed
      * elements
      *
-     * @return array
+     * @return array|string|null
      */
-    public function argv() : array
+    public function argv(int $index=null, $default=null)
     {
-        return $this->unparsed;
+        print_r ($this);
+        if ($index !== null) {
+            if (isset ($this->argv[$index]))
+                return $this->argv[$index];
+            if ($default instanceof \Exception)
+                throw $default;
+            return $default;
+        }
+        return $this->argv;
     }
 }

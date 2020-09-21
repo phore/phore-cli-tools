@@ -13,7 +13,8 @@
     ],
     "require": {
         "php": ">=7.2",
-        "psr/log": "^1.1"
+        "psr/log": "^1.1",
+        "ext-readline": "*"
     },
     "require-dev": {
         "phore/log": "*",
@@ -24,6 +25,7 @@
     },
     "autoload": {
         "psr-4": {
+            "Phore\\CliTools\\Demo\\": "demo_app",
             "Phore\\CliTools\\": "src"
         }
     },

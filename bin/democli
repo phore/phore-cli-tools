@@ -14,8 +14,8 @@ if (file_exists(__DIR__ . "/../vendor/autoload.php")) {
 /**
  * Adjust this to your CliClass
  */
-$i = new \Cloudia\Cli\CloudiaCli();
-$i->main($argv, $argc);
+$i = new Phore\CliTools\Demo\Cmd\MainCmd();
+exit($i->main($argv, $argc));
 
 
 
