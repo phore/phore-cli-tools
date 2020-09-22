@@ -52,13 +52,10 @@ class GetOptParser
 
     public function getOpts(array $argv, array &$rest=null) : GetOptResult
     {
-        if (count($argv) > 0 && ! startsWith($argv[0], "-")) {
-            $rest = $argv;
-            return new GetOptResult([], $argv);
-        }
+        
         $parsedOpts = [];
         while (count($argv) > 0) {
-            $curArg = array_shift($argv);
+            $curArg = $argv[0];
             if (startsWith($curArg, "--")) {
                 $p = substr($curArg, 2);
                 if ( ! isset($this->longOpts[$p]))
@@ -70,9 +67,11 @@ class GetOptParser
                     throw new UserInputException("Unrecognized option: '--$p'");
                 $type = $this->shortOpts[$p];
             } else {
+
                 $rest = $argv;
                 return new GetOptResult($parsedOpts, $argv);
             }
+            array_shift($argv);
             if ($type === self::PARAM_BOOL)
                 $parsedOpts[$p] = true;
             if ($type === self::PARAM_REQ) {
