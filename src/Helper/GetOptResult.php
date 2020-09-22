@@ -13,28 +13,16 @@ class GetOptResult
 
     private $result;
     private $argv;
-    private $cmd;
 
-    public function __construct(string $cmd = null, array $result, array $argv)
+    public function __construct(array $result, array $argv)
     {
         $this->result = $result;
         $this->argv = $argv;
-        $this->cmd = $cmd;
     }
 
     public function has(string $key) : bool
     {
         return isset ($this->result[$key]);
-    }
-
-    public function getCmd() : ?string
-    {
-        return $this->cmd;
-    }
-
-    public function hasCmd() : bool
-    {
-        return $this->cmd !== null;
     }
 
     public function get(string $key, $default=null) : ?string

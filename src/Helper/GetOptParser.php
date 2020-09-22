@@ -71,7 +71,7 @@ class GetOptParser
                 $type = $this->shortOpts[$p];
             } else {
                 $rest = $argv;
-                return new GetOptResult($cmd, $parsedOpts, $argv);
+                return new GetOptResult($parsedOpts, $argv);
             }
             if ($type === self::PARAM_BOOL)
                 $parsedOpts[$p] = true;
@@ -83,6 +83,6 @@ class GetOptParser
             }
         }
         $rest = $argv;
-        return new GetOptResult($cmd, $parsedOpts, $argv);
+        return new GetOptResult($parsedOpts, $argv);
     }
 }
