@@ -61,7 +61,6 @@ class GetOptResult
      */
     public function argv(int $index=null, $default=null)
     {
-        print_r ($this);
         if ($index !== null) {
             if (isset ($this->argv[$index]))
                 return $this->argv[$index];
