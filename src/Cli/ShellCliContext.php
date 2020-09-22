@@ -60,6 +60,12 @@ class ShellCliContext implements CliContext
             return;
         file_put_contents("php://stderr", implode(" ", $msg));
     }
+
+    public function stdout($data)
+    {
+        file_put_contents("php://stdout", $data);
+    }
+
     /**
      * Output debug-message to stdout
      *
