@@ -193,7 +193,7 @@ class ShellCliContext implements CliContext
 
     public function printHelpAndExit(string $helpfile=null)
     {
-        $this->out("Help");
+        $this->out(file_get_contents($helpfile));
         $this->exit(0);
     }
 
@@ -221,9 +221,9 @@ class ShellCliContext implements CliContext
             array_shift($this->unparsedArgv);
 
             if ($cmd === null)
-                throw new UserInputException("Command missing: available: " . implode(", ", array_keys($cmdMap)));
+                throw new UserInputException("Command missing. (Available: " . implode(", ", array_keys($cmdMap)). ")");
             if ( ! isset ($curMapItem[$cmd]))
-                throw new UserInputException("Invalid command '$cmd'. Allowed commands: " . implode(", ", array_keys($cmdMap)));
+                throw new UserInputException("Invalid command '$cmd'. (Allowed: " . implode(", ", array_keys($cmdMap)) . ")");
             if (is_array($curMapItem[$cmd])) {
                 $curMapItem = $curMapItem[$cmd];
                 continue;
