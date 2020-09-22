@@ -205,14 +205,15 @@ class ShellCliContext implements CliContext
         return $cmd->invoke($newContextInstance);
     }
 
-    public function dispatchMap (array $cmdMap, GetOptResult $getOptResult)
+    public function dispatchMap (array $cmdMap, GetOptResult $getOptResult) : ?int
     {
         $curMapItem = $cmdMap;
         $index = 0;
         while(true) {
             $cmd = $getOptResult->argv(0);
             $getOptResult->shift();
-            echo $cmd;
+            array_shift($this->unparsedArgv);
+
             if ($cmd === null)
                 throw new UserInputException("Command missing: available: " . implode(", ", array_keys($cmdMap)));
             if ( ! isset ($curMapItem[$cmd]))

@@ -89,7 +89,7 @@ interface CliContext
      * @return mixed
      */
     public function dispatch(PhoreAbstractCmd $cmd);
-    public function dispatchMap(array $cmdMap, GetOptResult $getOptResult);
+    public function dispatchMap(array $cmdMap, GetOptResult $getOptResult) : ?int;
 
     public function exit($code=0, $messge=null);
 
