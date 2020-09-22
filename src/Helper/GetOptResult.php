@@ -47,24 +47,11 @@ class GetOptResult
         return $this->result[$key];
     }
 
-    /**
-     * Transform the parameter into an absolute path
-     *
-     *
-     *
-     * @param string $key
-     * @param null $default
-     * @return string
-     * @throws \Exception
-     */
-    public function getPathAbs (string $key, $default=null) : string
+    public function shift(int $num=1)
     {
-        $val = $this->get($key, $default);
-        if ( ! startsWith($val, "/"))
-            $val = getcwd() . "/" . $val;
-        return $val;
+        return array_shift($this->argv);
     }
-
+    
     public function getArr(string $key, $default=null) : ?array
     {
         if ( ! $this->has($key)) {

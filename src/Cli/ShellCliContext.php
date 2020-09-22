@@ -171,7 +171,7 @@ class ShellCliContext implements CliContext
         // TODO: Implement parseOpts() method.
     }
 
-    public function getOpts(string $shortOpts=null, array $longOpts=[]): GetOptResult
+    public function getOpts(string $shortOpts="", array $longOpts=[]): GetOptResult
     {
         $getOptsParser = new GetOptParser($shortOpts, $longOpts);
         return $getOptsParser->getOpts($this->argv, $this->unparsedArgv);
@@ -205,13 +205,25 @@ class ShellCliContext implements CliContext
         return $cmd->invoke($newContextInstance);
     }
 
-    public function dispatchMap (array $cmdMap, string $cmd = null)
+    public function dispatchMap (array $cmdMap, GetOptResult $getOptResult)
     {
-        if ($cmd === null)
-            throw new UserInputException("Command missing: available: " . implode(", ", array_keys($cmdMap)));
-        if ( ! isset ($cmdMap[$cmd]))
-            throw new UserInputException("Invalid command '$cmd'. Allowed commands: " . implode(", ", array_keys($cmdMap)));
-        return $this->dispatch($cmdMap[$cmd]);
+        $curMapItem = $cmdMap;
+        $index = 0;
+        while(true) {
+            $cmd = $getOptResult->argv(0);
+            $getOptResult->shift();
+            echo $cmd;
+            if ($cmd === null)
+                throw new UserInputException("Command missing: available: " . implode(", ", array_keys($cmdMap)));
+            if ( ! isset ($curMapItem[$cmd]))
+                throw new UserInputException("Invalid command '$cmd'. Allowed commands: " . implode(", ", array_keys($cmdMap)));
+            if (is_array($curMapItem[$cmd])) {
+                $curMapItem = $curMapItem[$cmd];
+                continue;
+            }
+            return $this->dispatch($curMapItem[$cmd]);
+        }
+
     }
 
 }

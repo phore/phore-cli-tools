@@ -48,10 +48,10 @@ class GetOptParser
         }
     }
 
+    
+
     public function getOpts(array $argv, array &$rest=null) : GetOptResult
     {
-        $cmd = array_shift($argv);
-
         if (count($argv) > 0 && ! startsWith($argv[0], "-")) {
             $rest = $argv;
             return new GetOptResult($cmd, [], $argv);

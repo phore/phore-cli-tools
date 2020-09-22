@@ -53,36 +53,7 @@ abstract class PhoreAbstractCmd
 
 
 
-    /**
-     * Execute depending
-     *
-     * ```
-     * $this->execMap([
-     *      "createThing" => function(array $argv, string $carg) {},
-     *      "deleteThing" => function(array $argv, int $argc, string $carg) {[
-     * ]);
-     * ```
-     *
-     * @param array $map
-     * @throws UserInputException
-     */
-    protected function execMap(array $map)
-    {
-        $argv = $this->opts->argv();
-        $nextArg = array_shift($argv);
-
-        if ($nextArg === null)
-            throw new UserInputException("Missing command");
-
-        if ( ! isset ($map[$nextArg]))
-            throw new UserInputException("Operation '$nextArg' unknown");
-
-        if ( ! is_callable($map[$nextArg]))
-            throw new \InvalidArgumentException("Operation '$nextArg' points to non callable");
-
-        // Call the function
-        ($map[$nextArg])($argv, count ($argv), $nextArg);
-    }
+    
 
     /**
      * Your code executed here
