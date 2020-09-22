@@ -42,6 +42,7 @@ interface CliContext
      */
     public function debug(...$msg);
 
+    public function stdout($data);
 
     /**
      * Output emergency message (with red border)
