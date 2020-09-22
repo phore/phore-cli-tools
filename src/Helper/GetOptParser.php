@@ -54,7 +54,7 @@ class GetOptParser
     {
         if (count($argv) > 0 && ! startsWith($argv[0], "-")) {
             $rest = $argv;
-            return new GetOptResult($cmd, [], $argv);
+            return new GetOptResult([], $argv);
         }
         $parsedOpts = [];
         while (count($argv) > 0) {
